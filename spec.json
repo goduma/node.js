@@ -1,0 +1,295 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Software Factory",
+    "description": "VM Micro-Service",
+    "version": "3.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3006/swf/vmRequest",
+      "description": "Endpoint for the VM micro-service"
+    }
+  ],
+  "paths": {
+    "/basicSet": {
+      "post": {
+        "operationId": "createVM",
+        "summary": "Creates a VM",
+        "description": "Create a new VM of type Basic Set.\n",
+        "requestBody": {
+          "description": "VM object that is required to create a VM",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/200VMResponseObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "201 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/200VMResponseObject"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400ErrorObject"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralErrorObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralErrorObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vmType": {
+      "get": {
+        "operationId": "getVmType",
+        "summary": "Fetches types of VM",
+        "description": "Gets a list of VM Types\n",
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/200VMTypeResponseObj"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralErrorObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templateType": {
+      "get": {
+        "operationId": "getTemplateType",
+        "summary": "Fetches Template types",
+        "description": "Get a list of template types based on VM type\n",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "vmType",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/200TemplateTypeResponseObj"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400ErrorObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralErrorObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "VMProperties": {
+        "title": "Properties corresponding to a VM",
+        "description": "Properties of a VM required to create a VM of Basic Set type",
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "example": "project_001"
+          },
+          "templateName": {
+            "type": "string",
+            "example": "template_001"
+          },
+          "addDiskNumber": {
+            "type": "string",
+            "example": "1"
+          },
+          "addCPUNumber": {
+            "type": "number",
+            "example": 2
+          },
+          "addMemoryNumber": {
+            "type": "string",
+            "example": "3"
+          },
+          "vmType": {
+            "type": "string",
+            "example": "Basic Set"
+          }
+        },
+        "required": [
+          "projectId",
+          "templateName",
+          "vmType"
+        ]
+      },
+      "200VMResponseObject": {
+        "type": "object",
+        "title": "Custom 200 Response object",
+        "description": "Describes schema for 200 response body",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/VMProperties"
+          }
+        }
+      },
+      "400ErrorObject": {
+        "type": "object",
+        "title": "Custom 400 error code Response Object",
+        "description": "400 Response object that provides error details",
+        "properties": {
+          "error": {
+            "type": "object",
+            "title": "Data object to contain status message",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Bad Request Found"
+              },
+              "errorCode": {
+                "type": "string",
+                "example": "VS0003"
+              },
+              "errorDetails": {
+                "type": "object",
+                "properties": {
+                  "param": {
+                    "type": "array",
+                    "example": [
+                      "projectId"
+                    ],
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Invalid Parameters"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "GeneralErrorObject": {
+        "type": "object",
+        "title": "Custom general error code Response Object",
+        "description": "General response object that provided error details",
+        "properties": {
+          "error": {
+            "type": "object",
+            "title": "Data object to contain status message",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Internal Server Error"
+              },
+              "errorCode": {
+                "type": "string",
+                "example": "VS0001"
+              }
+            }
+          }
+        }
+      },
+      "200VMTypeResponseObj": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "vm_type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "200TemplateTypeResponseObj": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "template_type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
